@@ -2,7 +2,10 @@
 //Things like airguitar can be done without arms, and the flap thing makes so little sense it's a keeper.
 //Intended to be called by a higher up emote proc if the requested emote isn't in the custom emotes.
 
-/mob/living/emote(var/act, var/m_type=1, var/message = null)
+/mob/living/emote(act, m_type=1, message = null)
+	if(stat)
+		return
+
 	var/param = null
 
 	if (findtext(act, "-", 1, null))
@@ -85,6 +88,11 @@
 				message = "<B>[src]</B> flaps its wings."
 				m_type = 2
 
+		if ("flip")
+			if (!src.restrained() || !src.resting || !src.sleeping)
+				src.SpinAnimation(7,1)
+				m_type = 2
+
 		if ("frown")
 			message = "<B>[src]</B> frowns."
 			m_type = 1
@@ -145,8 +153,6 @@
 					return
 				if (src.client.handle_spam_prevention(message,MUTE_IC))
 					return
-			if (stat)
-				return
 			if(!(message))
 				return
 			else
@@ -268,11 +274,11 @@
 			if(!M.client || istype(M, /mob/new_player))
 				continue //skip monkeys, leavers and new players
 			var/T = get_turf(src)
-			if(M.stat == DEAD && (M.client.prefs.toggles & CHAT_GHOSTSIGHT) && !(M in viewers(T,null)))
+			if(M.stat == DEAD && M.client && (M.client.prefs.chat_toggles & CHAT_GHOSTSIGHT) && !(M in viewers(T,null)))
 				M.show_message(message)
 
 
 		if (m_type & 1)
 			visible_message(message)
 		else if (m_type & 2)
-			src.loc.audible_message(message)
+			audible_message(message)

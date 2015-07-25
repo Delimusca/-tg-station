@@ -2,9 +2,9 @@
 	name = "timer"
 	desc = "Used to time things. Works well with contraptions which has to count down. Tick tock."
 	icon_state = "timer"
-	m_amt = 500
-	g_amt = 50
+	materials = list(MAT_METAL=500, MAT_GLASS=50)
 	origin_tech = "magnets=1"
+	attachable = 1
 
 	var/timing = 0
 	var/time = 5
@@ -26,10 +26,10 @@
 /obj/item/device/assembly/timer/toggle_secure()
 	secured = !secured
 	if(secured)
-		processing_objects.Add(src)
+		SSobj.processing |= src
 	else
 		timing = 0
-		processing_objects.Remove(src)
+		SSobj.processing.Remove(src)
 	update_icon()
 	return secured
 
@@ -38,8 +38,7 @@
 	if((!secured)||(cooldown > 0))
 		return 0
 	pulse(0)
-	if(src.loc)
-		src.loc.audible_message("\icon[src] *beep* *beep*", null, 3)
+	audible_message("\icon[src] *beep* *beep*", null, 3)
 	cooldown = 2
 	spawn(10)
 		process_cooldown()
@@ -67,7 +66,7 @@
 	return
 
 
-/obj/item/device/assembly/timer/interact(mob/user as mob)//TODO: Have this use the wires
+/obj/item/device/assembly/timer/interact(mob/user)//TODO: Have this use the wires
 	if(is_secured(user))
 		var/second = time % 60
 		var/minute = (time - second) / 60
@@ -90,7 +89,7 @@
 	if(href_list["time"])
 		timing = text2num(href_list["time"])
 		if(timing && istype(holder, /obj/item/device/transfer_valve))
-			var/timer_message = "[key_name_admin(usr)](<A HREF='?_src_=holder;adminmoreinfo=\ref[usr]'>?</A>) activated [src] attachment on [holder]."
+			var/timer_message = "[key_name_admin(usr)](<A HREF='?_src_=holder;adminmoreinfo=\ref[usr]'>?</A>) (<A HREF='?_src_=holder;adminplayerobservefollow=\ref[usr]'>FLW</A>) activated [src] attachment on [holder]."
 			message_admins(timer_message)
 			bombers += timer_message
 			log_game("[key_name(usr)] activated [src] attachment for [loc]")

@@ -5,6 +5,7 @@
 	required_players = 25
 	required_enemies = 5
 	recommended_enemies = 8
+	reroll_friendly = 0
 
 	traitor_name = "double agent"
 
@@ -27,7 +28,7 @@
 		target_list[traitor] = traitors[i + 1]
 	..()
 
-/datum/game_mode/traitor/double_agents/forge_traitor_objectives(var/datum/mind/traitor)
+/datum/game_mode/traitor/double_agents/forge_traitor_objectives(datum/mind/traitor)
 
 	if(target_list.len && target_list[traitor]) // Is a double agent
 
@@ -47,7 +48,7 @@
 		..() // Give them standard objectives.
 	return
 
-/datum/game_mode/traitor/double_agents/add_latejoin_traitor(var/datum/mind/character)
+/datum/game_mode/traitor/double_agents/add_latejoin_traitor(datum/mind/character)
 
 	check_potential_agents()
 

@@ -49,7 +49,7 @@
 		else
 			return 0
 
-/obj/machinery/r_n_d/attack_hand(mob/user as mob)
+/obj/machinery/r_n_d/attack_hand(mob/user)
 	if (shocked)
 		shock(user,50)
 	if(panel_open)
@@ -73,10 +73,10 @@
 	if(href_list["pulse"])
 		var/temp_wire = href_list["wire"]
 		if (!istype(usr.get_active_hand(), /obj/item/device/multitool))
-			usr << "You need a multitool!"
+			usr << "<span class='warning'>You need a multitool!</span>"
 		else
 			if(src.wires[temp_wire])
-				usr << "You can't pulse a cut wire."
+				usr << "<span class='warning'>You can't pulse a cut wire!</span>"
 			else
 				if(src.hack_wire == href_list["wire"])
 					src.hacked = !src.hacked
@@ -91,7 +91,7 @@
 					spawn(100) src.shocked = !src.shocked
 	if(href_list["cut"])
 		if (!istype(usr.get_active_hand(), /obj/item/weapon/wirecutters))
-			usr << "You need wirecutters!"
+			usr << "<span class='warning'>You need wirecutters!</span>"
 		else
 			var/temp_wire = href_list["wire"]
 			wires[temp_wire] = !wires[temp_wire]

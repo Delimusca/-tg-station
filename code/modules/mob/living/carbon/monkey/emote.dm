@@ -1,4 +1,4 @@
-/mob/living/carbon/monkey/emote(var/act)
+/mob/living/carbon/monkey/emote(act)
 
 	var/param = null
 	if (findtext(act, "-", 1, null))
@@ -77,5 +77,5 @@
 		if (m_type & 1)
 			visible_message(message)
 		else
-			src.loc.audible_message(message)
+			audible_message(message)
 	return

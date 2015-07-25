@@ -100,6 +100,14 @@ macro "borghotkeymode"
 		command = ".west"
 		is-disabled = false
 	elem 
+		name = "C"
+		command = "resist"
+		is-disabled = false
+	elem 
+		name = "CTRL+C"
+		command = "resist"
+		is-disabled = false
+	elem 
 		name = "D+REP"
 		command = ".east"
 		is-disabled = false
@@ -197,7 +205,7 @@ macro "borghotkeymode"
 		is-disabled = false
 	elem 
 		name = "F6"
-		command = "Player-Panel-New"
+		command = "Player-Panel"
 		is-disabled = false
 	elem 
 		name = "F7"
@@ -298,6 +306,10 @@ macro "macro"
 		command = ".west"
 		is-disabled = false
 	elem 
+		name = "CTRL+C"
+		command = "resist"
+		is-disabled = false
+	elem 
 		name = "CTRL+D+REP"
 		command = ".east"
 		is-disabled = false
@@ -363,7 +375,7 @@ macro "macro"
 		is-disabled = false
 	elem 
 		name = "F6"
-		command = "Player-Panel-New"
+		command = "Player-Panel"
 		is-disabled = false
 	elem 
 		name = "F7"
@@ -484,6 +496,14 @@ macro "hotkeymode"
 		command = ".west"
 		is-disabled = false
 	elem 
+		name = "C"
+		command = "resist"
+		is-disabled = false
+	elem 
+		name = "CTRL+C"
+		command = "resist"
+		is-disabled = false
+	elem 
 		name = "D+REP"
 		command = ".east"
 		is-disabled = false
@@ -514,6 +534,14 @@ macro "hotkeymode"
 	elem 
 		name = "CTRL+G"
 		command = "a-intent right"
+		is-disabled = false
+	elem 
+		name = "M"
+		command = "me"
+		is-disabled = false
+	elem 
+		name = "O"
+		command = "ooc"
 		is-disabled = false
 	elem 
 		name = "Q"
@@ -597,7 +625,7 @@ macro "hotkeymode"
 		is-disabled = false
 	elem 
 		name = "F6"
-		command = "Player-Panel-New"
+		command = "Player-Panel"
 		is-disabled = false
 	elem 
 		name = "F7"
@@ -628,6 +656,10 @@ macro "borgmacro"
 	elem 
 		name = "SOUTHEAST"
 		command = ".southeast"
+		is-disabled = false
+	elem 
+		name = "SOUTHWEST"
+		command = "resist"
 		is-disabled = false
 	elem 
 		name = "NORTHWEST"
@@ -694,6 +726,10 @@ macro "borgmacro"
 		command = ".west"
 		is-disabled = false
 	elem 
+		name = "CTRL+C"
+		command = "resist"
+		is-disabled = false
+	elem 
 		name = "CTRL+D+REP"
 		command = ".east"
 		is-disabled = false
@@ -751,7 +787,7 @@ macro "borgmacro"
 		is-disabled = false
 	elem 
 		name = "F6"
-		command = "Player-Panel-New"
+		command = "Player-Panel"
 		is-disabled = false
 	elem 
 		name = "F7"

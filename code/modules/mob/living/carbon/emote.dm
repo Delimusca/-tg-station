@@ -2,7 +2,7 @@
 //Things like airguitar can be done without arms, and the flap thing makes so little sense it's a keeper.
 //Intended to be called by a higher up emote proc if the requested emote isn't in the custom emotes.
 
-/mob/living/carbon/emote(var/act,var/m_type=1,var/message = null)
+/mob/living/carbon/emote(act,m_type=1,message = null)
 	var/param = null
 
 	if (findtext(act, "-", 1, null))
@@ -188,11 +188,11 @@
 		for(var/mob/M in dead_mob_list)
 			if(!M.client || istype(M, /mob/new_player))
 				continue //skip monkeys, leavers and new players
-			if(M.stat == DEAD && (M.client.prefs.toggles & CHAT_GHOSTSIGHT) && !(M in viewers(src,null)))
+			if(M.stat == DEAD && M.client && (M.client.prefs.chat_toggles & CHAT_GHOSTSIGHT) && !(M in viewers(src,null)))
 				M.show_message(message)
 
 
 		if (m_type & 1)
 			visible_message(message)
 		else if (m_type & 2)
-			src.loc.audible_message(message)
+			audible_message(message)

@@ -34,22 +34,21 @@
 	if(requires_power)
 		luminosity = 0
 	else
-		power_light = 0			//rastaf0
-		power_equip = 0			//rastaf0
-		power_environ = 0		//rastaf0
+		power_light = 1			//rastaf0
+		power_equip = 1			//rastaf0
+		power_environ = 1		//rastaf0
 		luminosity = 1
 		lighting_use_dynamic = 0
 
 	..()
 
-//	spawn(15)
 	power_change()		// all machines set to current power level, also updates lighting icon
-	InitializeLighting()
 
 	blend_mode = BLEND_MULTIPLY // Putting this in the constructure so that it stops the icons being screwed up in the map editor.
 
 
-/area/proc/poweralert(var/state, var/obj/source as obj)
+
+/area/proc/poweralert(state, obj/source)
 	if (state != poweralm)
 		poweralm = state
 		if(istype(source))	//Only report power alarms on the z-level where the source is located.
@@ -75,7 +74,7 @@
 					D.triggerAlarm("Power", src, cameras, source)
 	return
 
-/area/proc/atmosalert(var/danger_level, var/obj/source as obj)
+/area/proc/atmosalert(danger_level, obj/source)
 	if(danger_level != atmosalm)
 		if (danger_level==2)
 			var/list/cameras = list()
@@ -102,7 +101,7 @@
 		return 1
 	return 0
 
-/area/proc/firealert(var/obj/source as obj)
+/area/proc/firealert(obj/source)
 	if(always_unpowered == 1) //no fire alarms in space/asteroid
 		return
 
@@ -131,7 +130,7 @@
 		D.triggerAlarm("Fire", src, cameras, source)
 	return
 
-/area/proc/firereset(var/obj/source as obj)
+/area/proc/firereset(obj/source)
 	for(var/area/RA in related)
 		if (RA.fire)
 			RA.fire = 0
@@ -155,7 +154,7 @@
 		D.cancelAlarm("Fire", src, source)
 	return
 
-/area/proc/burglaralert(var/obj/trigger)
+/area/proc/burglaralert(obj/trigger)
 	if(always_unpowered == 1) //no burglar alarms in space/asteroid
 		return
 
@@ -223,7 +222,7 @@
 	return
 
 /area/proc/updateicon()
-	if ((fire || eject || party) && (!requires_power||power_environ) && !lighting_space)//If it doesn't require power, can still activate this proc.
+	if ((fire || eject || party) && (!requires_power||power_environ))//If it doesn't require power, can still activate this proc.
 		if(fire && !eject && !party)
 			icon_state = "blue"
 		/*else if(atmosalm && !fire && !eject && !party)
@@ -238,6 +237,8 @@
 	//	new lighting behaviour with obj lights
 		icon_state = null
 
+/area/space/updateicon()
+	icon_state = null
 
 /*
 #define EQUIP 1
@@ -245,14 +246,12 @@
 #define ENVIRON 3
 */
 
-/area/proc/powered(var/chan)		// return true if the area has power to given channel
+/area/proc/powered(chan)		// return true if the area has power to given channel
 
 	if(!master.requires_power)
 		return 1
 	if(master.always_unpowered)
 		return 0
-	if(src.lighting_space)
-		return 0 // Nope sorry
 	switch(chan)
 		if(EQUIP)
 			return master.power_equip
@@ -261,6 +260,9 @@
 		if(ENVIRON)
 			return master.power_environ
 
+	return 0
+
+/area/space/powered(chan) //Nope.avi
 	return 0
 
 // called when power status changes
@@ -272,7 +274,7 @@
 		if (fire || eject || party)
 			RA.updateicon()
 
-/area/proc/usage(var/chan)
+/area/proc/usage(chan)
 	var/used = 0
 	switch(chan)
 		if(LIGHT)
@@ -306,7 +308,7 @@
 	master.used_light = 0
 	master.used_environ = 0
 
-/area/proc/use_power(var/amount, var/chan)
+/area/proc/use_power(amount, chan)
 
 	switch(chan)
 		if(EQUIP)
@@ -330,11 +332,11 @@
 	L.lastarea = newarea
 
 	// Ambience goes down here -- make sure to list each area seperately for ease of adding things in later, thanks! Note: areas adjacent to each other should have the same sounds to prevent cutoff when possible.- LastyScratch
-	if(!(L && L.client && (L.client.prefs.toggles & SOUND_AMBIENCE)))	return
-
-	if(!L.client.ambience_playing)
+	if(L.client && !L.client.ambience_playing && L.client.prefs.toggles & SOUND_SHIP_AMBIENCE)
 		L.client.ambience_playing = 1
 		L << sound('sound/ambience/shipambience.ogg', repeat = 1, wait = 0, volume = 35, channel = 2)
+
+	if(!(L.client && (L.client.prefs.toggles & SOUND_AMBIENCE)))	return //General ambience check is below the ship ambience so one can play without the other
 
 	if(prob(35))
 		var/sound = pick(ambientsounds)
@@ -345,9 +347,6 @@
 			spawn(600)			//ewww - this is very very bad
 				if(L.&& L.client)
 					L.client.played = 0
-
-/area/proc/mob_activate(var/mob/living/L)
-	return
 
 /proc/has_gravity(atom/AT, turf/T)
 	if(!T)
@@ -362,7 +361,7 @@
 		if(T && gravity_generators["[T.z]"] && length(gravity_generators["[T.z]"]))
 			return 1
 	return 0
-
+/*
 /area/proc/clear_docking_area()
 	var/list/dstturfs = list()
 	var/throwy = world.maxy
@@ -398,3 +397,4 @@
 		if(ismob(bug))
 			continue
 		qdel(bug)*/
+*/

@@ -20,17 +20,17 @@
 	while(!notesfile.eof)
 		var/note
 		notesfile >> note
-		dat += note
+		dat += note + "<br>"
 	var/datum/browser/popup = new(usr, "player_notes", "Player Notes", 700, 400)
 	popup.set_content(dat)
 	popup.open()
 
 
-datum/admins/proc/notes_show(var/ckey)
+/datum/admins/proc/notes_show(ckey)
 	usr << browse("<head><title>Player Notes</title></head><body>[notes_gethtml(ckey)]</body>","window=player_notes;size=700x400")
 
 
-datum/admins/proc/notes_gethtml(var/ckey)
+/datum/admins/proc/notes_gethtml(ckey)
 	var/savefile/notesfile = new(NOTESFILE)
 	if(!notesfile)	return "<span class='warning'>Error: Cannot access [NOTESFILE]</span>"
 	if(ckey)
@@ -53,7 +53,7 @@ datum/admins/proc/notes_gethtml(var/ckey)
 //handles adding notes to the end of a ckey's buffer
 //originally had seperate entries such as var/by to record who left the note and when
 //but the current bansystem is a heap of dung.
-/proc/notes_add(var/ckey, var/note, var/lognote = 0)
+/proc/notes_add(ckey, note, lognote = 0)
 	if(!ckey)
 		ckey = ckey(input(usr,"Who would you like to add notes for?","Enter a ckey",null) as text|null)
 		if(!ckey)	return
@@ -75,7 +75,7 @@ datum/admins/proc/notes_gethtml(var/ckey)
 	return
 
 //handles removing entries from the buffer, or removing the entire directory if no start_index is given
-/proc/notes_remove(var/ckey, var/start_index, var/end_index)
+/proc/notes_remove(ckey, start_index, end_index)
 	var/savefile/notesfile = new(NOTESFILE)
 	var/admin_msg
 	if(!notesfile)	return

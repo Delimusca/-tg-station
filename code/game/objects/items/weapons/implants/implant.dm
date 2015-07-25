@@ -5,7 +5,7 @@
 	action_button_is_hands_free = 1
 	var/activated = 1 //1 for implant types that can be activated, 0 for ones that are "always on" like loyalty implants
 	var/implanted = null
-	var/mob/imp_in = null
+	var/mob/living/imp_in = null
 	item_color = "b"
 	var/allow_reagents = 0
 
@@ -24,7 +24,7 @@
 //What does the implant do upon injection?
 //return 0 if the implant fails (ex. Revhead and loyalty implant.)
 //return 1 if the implant succeeds (ex. Nonrevhead and loyalty implant.)
-/obj/item/weapon/implant/proc/implanted(var/mob/source)
+/obj/item/weapon/implant/proc/implanted(mob/source)
 	if(activated)
 		action_button_name = "Activate [src.name]"
 	if(istype(source, /mob/living/carbon/human))
@@ -36,7 +36,7 @@
 /obj/item/weapon/implant/proc/get_data()
 	return "No information available"
 
-/obj/item/weapon/implant/dropped(mob/user as mob)
+/obj/item/weapon/implant/dropped(mob/user)
 	. = 1
 	qdel(src)
 	return .
@@ -64,12 +64,28 @@
 				Implant Specifics:<BR>"}
 	return dat
 
+/obj/item/weapon/implant/weapons_auth
+	name = "firearms authentication implant"
+	desc = "Lets you shoot your guns"
+	icon_state = "auth"
+	activated = 0
 
+/obj/item/weapon/implant/weapons_auth/get_data()
+	var/dat = {"<b>Implant Specifications:</b><BR>
+				<b>Name:</b> Firearms Authentication Implant<BR>
+				<b>Life:</b> 4 hours after death of host<BR>
+				<b>Implant Details:</b> <BR>
+				<b>Function:</b> Allows operation of implant-locked weaponry, preventing equipment from falling into enemy hands."}
+	return dat
 
 /obj/item/weapon/implant/explosive
-	name = "explosive implant"
+	name = "microbomb implant"
 	desc = "And boom goes the weasel."
 	icon_state = "explosive"
+	var/weak = 1.6
+	var/medium = 0.8
+	var/heavy = 0.4
+	var/delay = 7
 
 /obj/item/weapon/implant/explosive/get_data()
 	var/dat = {"<b>Implant Specifications:</b><BR>
@@ -87,14 +103,64 @@
 	if(emote == "deathgasp")
 		activate("death")
 
-/obj/item/weapon/implant/explosive/activate(var/cause)
+/obj/item/weapon/implant/explosive/activate(cause)
 	if(!cause || !imp_in)	return 0
-	if(cause == "action_button" && alert(imp_in, "Are you sure you want to activate your explosive implant? This will cause you to explode and gib!", "Explosive Implant Confirmation", "Yes", "No") != "Yes")
+	if(cause == "action_button" && alert(imp_in, "Are you sure you want to activate your microbomb implant? This will cause you to explode!", "Microbomb Implant Confirmation", "Yes", "No") != "Yes")
 		return 0
-	explosion(src, -1, 0, 2, 3, 0)	//This might be a bit much, dono will have to see.
-	if(imp_in)
+	for(var/obj/item/weapon/implant/explosive/E in imp_in)
+		heavy += 0.4
+		medium += 0.8
+		weak += 1.6
+		delay += 7
+		if(E != src)
+			qdel(E)
+	heavy = round(heavy)
+	medium = round(medium)
+	weak = round(weak)
+	imp_in << "<span class='notice'>You activate your microbomb implant.</span>"
+//If the delay is short, just blow up already jeez
+	if(delay <= 7)
 		imp_in.gib()
+		explosion(src,heavy,medium,weak,weak, flame_range = weak)
+		qdel(src)
+		return
+	timed_explosion()
 
+/obj/item/weapon/implant/explosive/proc/timed_explosion()
+	imp_in.visible_message("<span class = 'warning'>[imp_in] starts beeping ominously!</span>")
+	playsound(loc, 'sound/items/timer.ogg', 30, 0)
+	sleep(delay/4)
+	if(imp_in.stat)
+		imp_in.visible_message("<span class = 'warning'>[imp_in] doubles over in pain!</span>")
+		imp_in.Weaken(7)
+	playsound(loc, 'sound/items/timer.ogg', 30, 0)
+	sleep(delay/4)
+	playsound(loc, 'sound/items/timer.ogg', 30, 0)
+	sleep(delay/4)
+	playsound(loc, 'sound/items/timer.ogg', 30, 0)
+	sleep(delay/4)
+	imp_in.gib()
+	explosion(src,heavy,medium,weak,weak, flame_range = weak)
+	qdel(src)
+
+/obj/item/weapon/implant/explosive/macro
+	name = "macrobomb implant"
+	desc = "And boom goes the weasel. And everything else nearby."
+	icon_state = "explosive"
+	weak = 16
+	medium = 8
+	heavy = 4
+	delay = 70
+
+/obj/item/weapon/implant/explosive/macro/activate(cause)
+	if(!cause || !imp_in)	return 0
+	if(cause == "action_button" && alert(imp_in, "Are you sure you want to activate your macrobomb implant? This will cause you to explode and gib!", "Macrobomb Implant Confirmation", "Yes", "No") != "Yes")
+		return 0
+	for(var/obj/item/weapon/implant/explosive/macro/E in imp_in)
+		if(E != src)
+			qdel(E)
+	imp_in << "<span class='notice'>You activate your macrobomb implant.</span>"
+	timed_explosion()
 
 /obj/item/weapon/implant/chem
 	name = "chem implant"
@@ -127,13 +193,18 @@
 	if(emote == "deathgasp")
 		activate(reagents.total_volume)
 
-/obj/item/weapon/implant/chem/activate(var/cause)
+/obj/item/weapon/implant/chem/activate(cause)
 	if(!cause || !imp_in)	return 0
 	var/mob/living/carbon/R = imp_in
-	reagents.trans_to(R, cause)
-	R << "You hear a faint *beep*."
+	var/injectamount = null
+	if (cause == "action_button")
+		injectamount = reagents.total_volume
+	else
+		injectamount = cause
+	reagents.trans_to(R, injectamount)
+	R << "<span class='italics'>You hear a faint beep.</span>"
 	if(!reagents.total_volume)
-		R << "You hear a faint click from your chest."
+		R << "<span class='italics'>You hear a faint click from your chest.</span>"
 		qdel(src)
 
 
@@ -157,14 +228,25 @@
 
 /obj/item/weapon/implant/loyalty/implanted(mob/target)
 	..()
-	if(target.mind in ticker.mode.head_revolutionaries)
+	if((target.mind in (ticker.mode.head_revolutionaries | ticker.mode.get_gang_bosses())) || is_shadow_or_thrall(target))
 		target.visible_message("<span class='warning'>[target] seems to resist the implant!</span>", "<span class='warning'>You feel the corporate tendrils of Nanotrasen try to invade your mind!</span>")
+		return 0
+	if(target.mind in ticker.mode.get_gangsters())
+		ticker.mode.remove_gangster(target.mind)
+		target.visible_message("<span class='warning'>[src] was destroyed in the process!</span>", "<span class='notice'>You feel a surge of loyalty towards Nanotrasen.</span>")
 		return 0
 	if(target.mind in ticker.mode.revolutionaries)
 		ticker.mode.remove_revolutionary(target.mind)
-	target << "<span class='notice'>You feel a surge of loyalty towards Nanotrasen.</span>"
+	if(target.mind in ticker.mode.cult)
+		target << "<span class='warning'>You feel the corporate tendrils of Nanotrasen try to invade your mind!</span>"
+	else
+		target << "<span class='notice'>You feel a surge of loyalty towards Nanotrasen.</span>"
 	return 1
 
+/obj/item/weapon/implant/loyalty/Destroy()
+	if(imp_in.stat != DEAD)
+		imp_in << "<span class='boldnotice'>You feel a sense of liberation as Nanotrasen's grip on your mind fades away.</span>"
+	..()
 
 /obj/item/weapon/implant/adrenalin
 	name = "adrenal implant"
@@ -190,12 +272,13 @@
 	imp_in.SetStunned(0)
 	imp_in.SetWeakened(0)
 	imp_in.SetParalysis(0)
+	imp_in.adjustStaminaLoss(-75)
 	imp_in.lying = 0
 	imp_in.update_canmove()
 
 	imp_in.reagents.add_reagent("synaptizine", 10)
-	imp_in.reagents.add_reagent("tricordrazine", 10)
-	imp_in.reagents.add_reagent("hyperzine", 10)
+	imp_in.reagents.add_reagent("omnizine", 10)
+	imp_in.reagents.add_reagent("stimulants", 10)
 
 
 /obj/item/weapon/implant/emp

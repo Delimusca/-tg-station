@@ -86,16 +86,20 @@ var/list/science_positions = list(
 )
 
 
-var/list/civilian_positions = list(
+var/list/supply_positions = list(
 	"Head of Personnel",
+	"Quartermaster",
+	"Cargo Technician",
+	"Shaft Miner",
+)
+
+
+var/list/civilian_positions = list(
 	"Bartender",
 	"Botanist",
 	"Cook",
 	"Janitor",
 	"Librarian",
-	"Quartermaster",
-	"Cargo Technician",
-	"Shaft Miner",
 	"Lawyer",
 	"Chaplain",
 	"Clown",
@@ -119,5 +123,5 @@ var/list/nonhuman_positions = list(
 )
 
 
-/proc/guest_jobbans(var/job)
+/proc/guest_jobbans(job)
 	return ((job in command_positions) || (job in nonhuman_positions) || (job in security_positions))

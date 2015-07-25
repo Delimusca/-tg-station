@@ -45,6 +45,7 @@
 	var/burn_dam = 0
 	var/max_damage = 0
 	var/status = ORGAN_ORGANIC
+	var/list/embedded_objects = list()
 
 
 
@@ -136,7 +137,7 @@
 //Heals brute and burn damage for the organ. Returns 1 if the damage-icon states changed at all.
 //Damage cannot go below zero.
 //Cannot remove negative damage (i.e. apply damage)
-/obj/item/organ/limb/proc/heal_damage(brute, burn, var/robotic)
+/obj/item/organ/limb/proc/heal_damage(brute, burn, robotic)
 
 	if(robotic && status != ORGAN_ROBOTIC) // This makes organic limbs not heal when the proc is in Robotic mode.
 		brute = max(0, brute - 3)
@@ -169,7 +170,7 @@
 		return 0
 
 //Returns a display name for the organ
-/obj/item/organ/limb/proc/getDisplayName() //Added "Chest" and "Head" just in case, this may not be needed - RR.
+/obj/item/organ/limb/proc/getDisplayName() //Added "Chest" and "Head" just in case, this may not be needed
 	switch(name)
 		if("l_leg")		return "left leg"
 		if("r_leg")		return "right leg"
@@ -180,3 +181,19 @@
 		else			return name
 
 
+//Remove all embedded objects from all limbs on the human mob
+/mob/living/carbon/human/proc/remove_all_embedded_objects()
+	var/turf/T = get_turf(src)
+
+	for(var/obj/item/organ/limb/L in organs)
+		for(var/obj/item/I in L.embedded_objects)
+			L.embedded_objects -= I
+			I.loc = T
+
+	clear_alert("embeddedobject")
+
+/mob/living/carbon/human/proc/has_embedded_objects()
+	. = 0
+	for(var/obj/item/organ/limb/L in organs)
+		for(var/obj/item/I in L.embedded_objects)
+			return 1

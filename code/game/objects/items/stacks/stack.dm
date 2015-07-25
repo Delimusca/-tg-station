@@ -25,11 +25,8 @@
 	return
 
 /obj/item/stack/Destroy()
-	if (is_cyborg)
-		return // Not supposed to be destroyed
 	if (usr && usr.machine==src)
 		usr << browse(null, "window=stack")
-	src.loc = null
 	..()
 
 /obj/item/stack/examine(mob/user)
@@ -56,10 +53,10 @@
 	else
 		return (amount)
 
-/obj/item/stack/attack_self(mob/user as mob)
+/obj/item/stack/attack_self(mob/user)
 	interact(user)
 
-/obj/item/stack/interact(mob/user as mob)
+/obj/item/stack/interact(mob/user)
 	if (!recipes)
 		return
 	if (!src || get_amount() <= 0)
@@ -119,23 +116,13 @@
 		var/multiplier = text2num(href_list["multiplier"])
 		if (!multiplier ||(multiplier <= 0)) //href protection
 			return
-		if (src.get_amount() < R.req_amount*multiplier)
-			if (R.req_amount*multiplier>1)
-				usr << "<span class='danger'>You haven't got enough [src] to build \the [R.req_amount*multiplier] [R.title]\s!</span>"
-			else
-				usr << "<span class='danger'>You haven't got enough [src] to build \the [R.title]!</span>"
-			return
-		if (R.one_per_turf && (locate(R.result_type) in usr.loc))
-			usr << "<span class='danger'>There is another [R.title] here!</span>"
-			return
-		if (R.on_floor && !istype(usr.loc, /turf/simulated/floor))
-			usr << "<span class='danger'>\The [R.title] must be constructed on the floor!</span>"
+		if(!building_checks(R, multiplier))
 			return
 		if (R.time)
-			usr << "<span class='notice'>Building [R.title] ...</span>"
-			if (!do_after(usr, R.time))
+			usr.visible_message("<span class='notice'>[usr] starts building [R.title].</span>", "<span class='notice'>You start building [R.title]...</span>")
+			if (!do_after(usr, R.time, target = usr))
 				return
-			if (src.get_amount() < R.req_amount*multiplier)
+			if(!building_checks(R, multiplier))
 				return
 
 		var/atom/O = new R.result_type( usr.loc )
@@ -167,25 +154,49 @@
 			return
 	return
 
+/obj/item/stack/proc/building_checks(datum/stack_recipe/R, multiplier)
+	if (src.get_amount() < R.req_amount*multiplier)
+		if (R.req_amount*multiplier>1)
+			usr << "<span class='warning'>You haven't got enough [src] to build \the [R.req_amount*multiplier] [R.title]\s!</span>"
+		else
+			usr << "<span class='warning'>You haven't got enough [src] to build \the [R.title]!</span>"
+		return 0
+	if (R.one_per_turf && (locate(R.result_type) in usr.loc))
+		usr << "<span class='warning'>There is another [R.title] here!</span>"
+		return 0
+	if (R.on_floor && !istype(usr.loc, /turf/simulated/floor))
+		usr << "<span class='warning'>\The [R.title] must be constructed on the floor!</span>"
+		return 0
+	return 1
+
 /obj/item/stack/proc/use(var/used) // return 0 = borked; return 1 = had enough
+	if(zero_amount())
+		return 0
 	if (is_cyborg)
 		return source.use_charge(used * cost)
 	if (amount < used)
 		return 0
 	amount -= used
-	if (amount <= 0)
-		if(usr)
-			usr.unEquip(src, 1)
-		qdel(src)
+	zero_amount()
+	update_icon()
 	return 1
 
-/obj/item/stack/proc/add(var/amount)
+/obj/item/stack/proc/zero_amount()
+	if(is_cyborg)
+		return source.energy < cost
+	if (amount < 1)
+		qdel(src)
+		return 1
+	return 0
+
+/obj/item/stack/proc/add(amount)
 	if (is_cyborg)
 		source.add_charge(amount * cost)
 	else
 		src.amount += amount
+	update_icon()
 
-/obj/item/stack/proc/add_to_stacks(mob/usr as mob)
+/obj/item/stack/proc/add_to_stacks(mob/usr)
 	var/obj/item/stack/oldsrc = src
 	src = null
 	for (var/obj/item/stack/item in usr.loc)
@@ -196,12 +207,14 @@
 		if (item.amount>=item.max_amount)
 			continue
 		oldsrc.attackby(item, usr)
-		usr << "You add new [item.singular_name] to the stack. It now contains [item.amount] [item.singular_name]\s."
+		usr << "<span class='notice'>You add new [item.singular_name] to the stack. It now contains [item.amount] [item.singular_name]\s.</span>"
 		if(oldsrc.amount <= 0)
 			break
+	oldsrc.update_icon()
 
-/obj/item/stack/attack_hand(mob/user as mob)
+/obj/item/stack/attack_hand(mob/user)
 	if (user.get_inactive_hand() == src)
+		if(zero_amount())	return
 		var/obj/item/stack/F = new src.type( user, 1)
 		F.copy_evidences(src)
 		user.put_in_hands(F)
@@ -214,9 +227,10 @@
 		..()
 	return
 
-/obj/item/stack/attackby(obj/item/W as obj, mob/user as mob)
+/obj/item/stack/attackby(obj/item/W, mob/user, params)
 
 	if (istype(W, src.type))
+		if(zero_amount())	return
 		var/obj/item/stack/S = W
 		if (S.is_cyborg)
 			var/to_transfer = min(src.amount, round((S.source.max_energy - S.source.energy) / S.cost))
@@ -240,6 +254,7 @@
 			src.use(to_transfer)
 			if (src && usr.machine==src)
 				spawn(0) src.interact(usr)
+			S.update_icon()
 
 	else
 		..()
