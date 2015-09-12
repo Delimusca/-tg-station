@@ -100,7 +100,10 @@
 	var/area/destarea = get_area(destination)
 	if(precision)
 		var/list/posturfs = list()
-		for(var/turf/T in range(precision,destination))
+		var/center = get_turf(destination)
+		if(!center)
+			center = destination
+		for(var/turf/T in range(precision,center))
 			posturfs.Add(T)
 		destturf = safepick(posturfs)
 	else
@@ -121,7 +124,7 @@
 	if(isliving(teleatom))
 		var/mob/living/L = teleatom
 		if(L.buckled)
-			L.buckled.unbuckle()
+			L.buckled.unbuckle_mob()
 
 	destarea.Entered(teleatom)
 

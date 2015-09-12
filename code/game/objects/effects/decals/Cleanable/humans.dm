@@ -10,21 +10,24 @@
 	random_icon_states = list("floor1", "floor2", "floor3", "floor4", "floor5", "floor6", "floor7")
 	var/list/viruses = list()
 	blood_DNA = list()
+	blood_state = BLOOD_STATE_HUMAN
+	bloodiness = MAX_SHOE_BLOODINESS
 
 /obj/effect/decal/cleanable/blood/Destroy()
 	for(var/datum/disease/D in viruses)
 		D.cure(0)
-	..()
+	viruses = null
+	return ..()
 
 /obj/effect/decal/cleanable/blood/New()
 	..()
-	remove_ex_blood()
-
-/obj/effect/decal/cleanable/blood/proc/remove_ex_blood() //removes existant blood on the turf
-	if(src.loc && isturf(src.loc))
-		for(var/obj/effect/decal/cleanable/blood/B in src.loc)
-			if(B != src)
-				qdel(B)
+	if(src.type == /obj/effect/decal/cleanable/blood)
+		if(src.loc && isturf(src.loc))
+			for(var/obj/effect/decal/cleanable/blood/B in src.loc)
+				if(B != src)
+					if (B.blood_DNA)
+						blood_DNA |= B.blood_DNA.Copy()
+					qdel(B)
 
 /obj/effect/decal/cleanable/blood/splatter
 	random_icon_states = list("gibbl1", "gibbl2", "gibbl3", "gibbl4", "gibbl5")
@@ -37,7 +40,7 @@
 
 /obj/effect/decal/cleanable/trail_holder //not a child of blood on purpose
 	name = "blood"
-	icon_state = "blank"
+	icon_state = "ltrails_1"
 	desc = "Your instincts say you shouldn't be following these."
 	gender = PLURAL
 	density = 0
@@ -61,9 +64,6 @@
 /obj/effect/decal/cleanable/blood/gibs/ex_act(severity, target)
 	return
 
-/obj/effect/decal/cleanable/blood/gibs/remove_ex_blood()
-    return
-
 /obj/effect/decal/cleanable/blood/gibs/up
 	random_icon_states = list("gib1", "gib2", "gib3", "gib4", "gib5", "gib6","gibup1","gibup1","gibup1")
 
@@ -80,7 +80,7 @@
 	random_icon_states = list("gibmid1", "gibmid2", "gibmid3")
 
 
-/obj/effect/decal/cleanable/blood/gibs/proc/streak(var/list/directions)
+/obj/effect/decal/cleanable/blood/gibs/proc/streak(list/directions)
 	spawn (0)
 		var/direction = pick(directions)
 		for (var/i = 0, i < pick(1, 200; 2, 150; 3, 50; 4), i++)
@@ -91,6 +91,71 @@
 					var/datum/disease/ND = D.Copy(1)
 					b.viruses += ND
 					ND.holder = b
-
 			if (step_to(src, get_step(src, direction), 0))
 				break
+
+/obj/effect/decal/cleanable/blood/drip
+	name = "drips of blood"
+	desc = "It's red."
+	gender = PLURAL
+	icon = 'icons/effects/drip.dmi'
+	icon_state = "1"
+	random_icon_states = list("1","2","3","4","5")
+	var/list/drips = list()
+
+/obj/effect/decal/cleanable/blood/drip/New()
+	..()
+	spawn(1)
+		drips |= icon_state
+	bloodiness = rand(5,15)
+
+
+//BLOODY FOOTPRINTS
+/obj/effect/decal/cleanable/blood/footprints
+	icon = 'icons/effects/footprints.dmi'
+	icon_state = "nothingwhatsoever"
+	desc = "Follow the bloody brick road!"
+	gender = PLURAL
+	random_icon_states = null
+	var/entered_dirs = 0
+	var/exited_dirs = 0
+	blood_state = BLOOD_STATE_HUMAN //the icon state to load images from
+
+/obj/effect/decal/cleanable/blood/footprints/Crossed(atom/movable/O)
+	if(ishuman(O))
+		var/mob/living/carbon/human/H = O
+		if(H.shoes) //Don't need to check for blood, as the footprints will MAKE the shoes bloody
+			entered_dirs|= H.dir
+	update_icon()
+
+/obj/effect/decal/cleanable/blood/footprints/Uncrossed(atom/movable/O)
+	if(ishuman(O))
+		var/mob/living/carbon/human/H = O
+		if(H.shoes)
+			exited_dirs|= H.dir
+	update_icon()
+
+/obj/effect/decal/cleanable/blood/footprints/update_icon()
+	overlays.Cut()
+
+	for(var/Ddir in cardinal)
+		if(entered_dirs & Ddir)
+			var/image/I
+			if(bloody_footprints_cache["entered-[blood_state]-[Ddir]"])
+				I = bloody_footprints_cache["entered-[blood_state]-[Ddir]"]
+			else
+				I =  image(icon,"[blood_state]1",dir = Ddir)
+				bloody_footprints_cache["entered-[blood_state]-[Ddir]"] = I
+			if(I)
+				overlays += I
+		if(exited_dirs & Ddir)
+			var/image/I
+			if(bloody_footprints_cache["exited-[blood_state]-[Ddir]"])
+				I = bloody_footprints_cache["exited-[blood_state]-[Ddir]"]
+			else
+				I = image(icon,"[blood_state]2",dir = Ddir)
+				bloody_footprints_cache["exited-[blood_state]-[Ddir]"] = I
+			if(I)
+				overlays += I
+
+	alpha = BLOODY_FOOTPRINT_BASE_ALPHA+bloodiness

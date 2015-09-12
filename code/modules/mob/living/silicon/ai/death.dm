@@ -8,6 +8,7 @@
 	else
 		icon_state = "ai_dead"
 
+	anchored = 0 //unbolt floorbolts
 	update_canmove()
 	if(src.eyeobj)
 		src.eyeobj.setLoc(get_turf(src))
@@ -17,7 +18,7 @@
 	see_invisible = SEE_INVISIBLE_LEVEL_TWO
 
 	shuttle_caller_list -= src
-	emergency_shuttle.autoshuttlecall()
+	SSshuttle.autoEvac()
 
 	if(explosive)
 		spawn(10)

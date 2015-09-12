@@ -1,9 +1,9 @@
-/proc/playsound(var/atom/source, soundin, vol as num, vary, extrarange as num, falloff, surround = 1)
+/proc/playsound(atom/source, soundin, vol as num, vary, extrarange as num, falloff, surround = 1)
 
 	soundin = get_sfx(soundin) // same sound for everyone
 
 	if(isarea(source))
-		ERROR("[source] is an area and is trying to make the sound: [soundin]")
+		throw EXCEPTION("playsound(): source is an area")
 		return
 
 	var/frequency = get_rand_frequency() // Same frequency for everybody
@@ -20,7 +20,7 @@
 				M.playsound_local(turf_source, soundin, vol, vary, frequency, falloff, surround)
 
 
-/atom/proc/playsound_local(var/turf/turf_source, soundin, vol as num, vary, frequency, falloff, surround = 1)
+/atom/proc/playsound_local(turf/turf_source, soundin, vol as num, vary, frequency, falloff, surround = 1)
 	soundin = get_sfx(soundin)
 
 	var/sound/S = sound(soundin)
@@ -73,14 +73,17 @@
 
 	src << S
 
-/mob/playsound_local(var/turf/turf_source, soundin, vol as num, vary, frequency, falloff, surround = 1)
+/mob/playsound_local(turf/turf_source, soundin, vol as num, vary, frequency, falloff, surround = 1)
 	if(!client || ear_deaf > 0)
 		return
 	..()
 
+/mob/proc/stopLobbySound()
+	src << sound(null, repeat = 0, wait = 0, volume = 85, channel = 1)
+
 /client/proc/playtitlemusic()
 	if(!ticker || !ticker.login_music)	return
-	if(prefs.toggles & SOUND_LOBBY)
+	if(prefs && (prefs.toggles & SOUND_LOBBY))
 		src << sound(ticker.login_music, repeat = 0, wait = 0, volume = 85, channel = 1) // MAD JAMS
 
 /proc/get_rand_frequency()

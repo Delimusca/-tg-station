@@ -1,5 +1,5 @@
 /obj/item/weapon/gun/projectile/automatic/pistol
-	name = "syndicate pistol"
+	name = "\improper FK-69 pistol"
 	desc = "A small, easily concealable 10mm handgun. Has a threaded barrel for suppressors."
 	icon_state = "pistol"
 	w_class = 2
@@ -8,6 +8,7 @@
 	can_suppress = 1
 	burst_size = 1
 	fire_delay = 0
+	action_button_name = null
 
 /obj/item/weapon/gun/projectile/automatic/pistol/update_icon()
 	..()
@@ -15,18 +16,20 @@
 	return
 
 /obj/item/weapon/gun/projectile/automatic/pistol/m1911
-	name = "M1911 pistol"
+	name = "\improper M1911 pistol"
 	desc = "A classic .45 handgun with a small magazine capacity."
 	icon_state = "m1911"
 	w_class = 3
 	mag_type = /obj/item/ammo_box/magazine/m45
+	can_suppress = 0
 
 /obj/item/weapon/gun/projectile/automatic/pistol/deagle
-	name = "desert eagle"
+	name = "\improper Desert Eagle pistol"
 	desc = "A robust .50 AE handgun."
 	icon_state = "deagle"
 	force = 14
 	mag_type = /obj/item/ammo_box/magazine/m50
+	can_suppress = 0
 
 /obj/item/weapon/gun/projectile/automatic/pistol/deagle/update_icon()
 	..()
