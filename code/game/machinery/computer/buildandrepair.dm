@@ -19,6 +19,7 @@
 	icon_state = "id_mod"
 	item_state = "electronic"
 	origin_tech = "programming=2"
+	materials = list(MAT_GLASS=200)
 	var/frequency = null
 	var/build_path = null
 	var/board_type = "computer"
@@ -128,7 +129,7 @@
 	build_path = /obj/machinery/computer/arcade/battle
 	origin_tech = "programming=1"
 /obj/item/weapon/circuitboard/arcade/orion_trail
-	name = "circuit board (Orion_Trail)"
+	name = "circuit board (Orion Trail)"
 	build_path = /obj/machinery/computer/arcade/orion_trail
 /obj/item/weapon/circuitboard/turbine_control
 	name = "circuit board (Turbine control)"

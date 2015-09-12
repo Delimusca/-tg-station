@@ -94,7 +94,7 @@
 		/obj/item/weapon/grenade/chem_grenade/teargas,
 		/obj/item/weapon/reagent_containers/spray/pepper,
 		/obj/item/weapon/restraints/handcuffs,
-		/obj/item/device/flash/handheld,
+		/obj/item/device/assembly/flash/handheld,
 		/obj/item/clothing/glasses,
 		/obj/item/ammo_casing/shotgun,
 		/obj/item/ammo_box,
@@ -133,6 +133,7 @@
 	desc = "Proves to the world that you are the strongest!"
 	icon_state = "championbelt"
 	item_state = "champion"
+	materials = list(MAT_GOLD=400)
 	storage_slots = 1
 	can_hold = list(
 		/obj/item/clothing/mask/luchador
@@ -205,6 +206,7 @@
 		/obj/item/weapon/gun/projectile/revolver,
 		/obj/item/ammo_box,
 		)
+	alternate_worn_layer = UNDER_SUIT_LAYER
 
 /obj/item/weapon/storage/belt/fannypack
 	name = "fannypack"
