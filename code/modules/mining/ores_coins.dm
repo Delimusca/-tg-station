@@ -36,6 +36,7 @@
 	icon_state = "Glass ore"
 	origin_tech = "materials=1"
 	points = 1
+	materials = list(MAT_GLASS = 100)
 	refined_type = /obj/item/stack/sheet/glass
 
 /obj/item/weapon/ore/glass/attack_self(mob/living/user)
@@ -121,6 +122,11 @@
 	var/attacher = "UNKNOWN"
 	var/datum/wires/explosive/gibtonite/wires
 
+/obj/item/weapon/twohanded/required/gibtonite/Destroy()
+	qdel(wires)
+	wires = null
+	return ..()
+
 /obj/item/weapon/twohanded/required/gibtonite/attackby(obj/item/I, mob/user, params)
 	if(!wires && istype(I, /obj/item/device/assembly/igniter))
 		user.visible_message("[user] attaches [I] to [src].", "<span class='notice'>You attach [I] to [src].</span>")
@@ -131,7 +137,7 @@
 		return
 
 	if(wires && !primed)
-		if(istype(I, /obj/item/weapon/wirecutters) || istype(I, /obj/item/device/multitool) || istype(I, /obj/item/device/assembly/signaler))
+		if(wires.IsInteractionTool(I))
 			wires.Interact(user)
 			return
 
@@ -231,36 +237,43 @@
 /obj/item/weapon/coin/gold
 	cmineral = "gold"
 	icon_state = "coin_gold_heads"
+	materials = list(MAT_GOLD = 400)
 	value = 160
 
 /obj/item/weapon/coin/silver
 	cmineral = "silver"
 	icon_state = "coin_silver_heads"
+	materials = list(MAT_SILVER = 400)
 	value = 40
 
 /obj/item/weapon/coin/diamond
 	cmineral = "diamond"
 	icon_state = "coin_diamond_heads"
+	materials = list(MAT_DIAMOND = 400)
 	value = 120
 
 /obj/item/weapon/coin/iron
 	cmineral = "iron"
 	icon_state = "coin_iron_heads"
+	materials = list(MAT_METAL = 400)
 	value = 20
 
 /obj/item/weapon/coin/plasma
 	cmineral = "plasma"
 	icon_state = "coin_plasma_heads"
+	materials = list(MAT_PLASMA = 400)
 	value = 80
 
 /obj/item/weapon/coin/uranium
 	cmineral = "uranium"
 	icon_state = "coin_uranium_heads"
+	materials = list(MAT_URANIUM = 400)
 	value = 160
 
 /obj/item/weapon/coin/clown
 	cmineral = "bananium"
 	icon_state = "coin_bananium_heads"
+	materials = list(MAT_BANANIUM = 400)
 	value = 600 //makes the clown cri
 
 /obj/item/weapon/coin/adamantine
@@ -326,7 +339,9 @@
 		flick("coin_[cmineral]_flip", src)
 		icon_state = "coin_[cmineral]_[coinflip]"
 		playsound(user.loc, 'sound/items/coinflip.ogg', 50, 1)
-		if(do_after(user, 15, target = src))
+		var/oldloc = loc
+		sleep(15)
+		if(loc == oldloc && user && !user.incapacitated())
 			user.visible_message("[user] has flipped [src]. It lands on [coinflip].", \
 								 "<span class='notice'>You flip [src]. It lands on [coinflip].</span>", \
 								 "<span class='italics'>You hear the clattering of loose change.</span>")

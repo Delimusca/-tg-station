@@ -155,6 +155,7 @@
 	throw_speed = 3
 	throw_range = 5
 	w_class = 2
+
 	materials = list(MAT_METAL=70, MAT_GLASS=30)
 	origin_tech = "engineering=1"
 	var/welding = 0 	//Whether or not the welding tool is off(0), on(1) or currently welding(2)
@@ -193,6 +194,10 @@
 /obj/item/weapon/weldingtool/examine(mob/user)
 	..()
 	user << "It contains [get_fuel()] unit\s of fuel out of [max_fuel]."
+
+/obj/item/weapon/weldingtool/suicide_act(mob/user)
+	user.visible_message("<span class='suicide'>[user] welds \his every orifice closed! It looks like \he's trying to commit suicide..</span>")
+	return (FIRELOSS)
 
 
 /obj/item/weapon/weldingtool/attackby(obj/item/I, mob/user, params)

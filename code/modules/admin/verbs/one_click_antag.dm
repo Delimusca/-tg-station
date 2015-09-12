@@ -330,10 +330,10 @@
 			ready_dna(Commando)
 			if(numagents == 1) //If Squad Leader
 				Commando.real_name = "Officer [pick(commando_names)]"
-				equip_deathsquad(Commando, 1)
+				Commando.equipOutfit(/datum/outfit/death_commando/officer)
 			else
 				Commando.real_name = "Trooper [pick(commando_names)]"
-				equip_deathsquad(Commando)
+				Commando.equipOutfit(/datum/outfit/death_commando)
 			Commando.key = chosen_candidate.key
 			Commando.mind.assigned_role = "Death Commando"
 			for(var/obj/machinery/door/poddoor/ert/door in airlocks)
@@ -425,7 +425,7 @@
 		newmob.real_name = newmob.dna.species.random_name(newmob.gender,1)
 		newmob.key = chosen_candidate.key
 		newmob.mind.assigned_role = "Centcom Official"
-		equip_centcomofficial(newmob)
+		newmob.equipOutfit(/datum/outfit/centcom_official)
 
 		//Assign antag status and the mission
 		ticker.mode.traitors += newmob.mind
@@ -450,17 +450,17 @@
 
 // CENTCOM RESPONSE TEAM
 /datum/admins/proc/makeEmergencyresponseteam()
-	var/alert = input("Which team should we send?", "Select Response Level") as null|anything in list("Green: Centcom Official", "Blue: Light ERT", "Amber: Full ERT", "Red: Elite ERT", "Delta: Deathsquad")
+	var/alert = input("Which team should we send?", "Select Response Level") as null|anything in list("Green: Centcom Official", "Blue: Light ERT (No Armoury Access)", "Amber: Full ERT (Armoury Access)", "Red: Elite ERT (Armoury Access + Pulse Weapons)", "Delta: Deathsquad")
 	if(!alert)
 		return
 	switch(alert)
 		if("Delta: Deathsquad")
 			return makeDeathsquad()
-		if("Red: Elite ERT")
+		if("Red: Elite ERT (Armoury Access + Pulse Weapons)")
 			alert = "Red"
-		if("Amber: Full ERT")
+		if("Amber: Full ERT (Armoury Access)")
 			alert = "Amber"
-		if("Blue: Light ERT")
+		if("Blue: Light ERT (No Armoury Access)")
 			alert = "Blue"
 		if("Green: Centcom Official")
 			return makeOfficial()
@@ -496,25 +496,25 @@
 			switch(numagents)
 				if(1)
 					ERTOperative.real_name = "Commander [ertname]"
-					equip_emergencyresponsesquad(ERTOperative, "commander",redalert)
+					ERTOperative.equipOutfit(redalert ? /datum/outfit/ert/commander/alert : /datum/outfit/ert/commander)
 				if(2)
 					ERTOperative.real_name = "Security Officer [ertname]"
-					equip_emergencyresponsesquad(ERTOperative, "sec",redalert)
+					ERTOperative.equipOutfit(redalert ? /datum/outfit/ert/security/alert : /datum/outfit/ert/security)
 				if(3)
 					ERTOperative.real_name = "Medical Officer [ertname]"
-					equip_emergencyresponsesquad(ERTOperative, "med",redalert)
+					ERTOperative.equipOutfit(redalert ? /datum/outfit/ert/medic/alert : /datum/outfit/ert/medic)
 				if(4)
 					ERTOperative.real_name = "Engineer [ertname]"
-					equip_emergencyresponsesquad(ERTOperative, "eng",redalert)
+					ERTOperative.equipOutfit(redalert ? /datum/outfit/ert/engineer/alert : /datum/outfit/ert/engineer)
 				if(5)
 					ERTOperative.real_name = "Security Officer [ertname]"
-					equip_emergencyresponsesquad(ERTOperative, "sec",redalert)
+					ERTOperative.equipOutfit(redalert ? /datum/outfit/ert/security/alert : /datum/outfit/ert/security)
 				if(6)
 					ERTOperative.real_name = "Medical Officer [ertname]"
-					equip_emergencyresponsesquad(ERTOperative, "med",redalert)
+					ERTOperative.equipOutfit(redalert ? /datum/outfit/ert/medic/alert : /datum/outfit/ert/medic)
 				if(7)
 					ERTOperative.real_name = "Engineer [ertname]"
-					equip_emergencyresponsesquad(ERTOperative, "eng",redalert)
+					ERTOperative.equipOutfit(redalert ? /datum/outfit/ert/engineer/alert : /datum/outfit/ert/engineer)
 			ERTOperative.key = chosen_candidate.key
 			ERTOperative.mind.assigned_role = "ERT"
 

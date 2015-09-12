@@ -12,6 +12,16 @@
 	build_path = /obj/item/weapon/circuitboard/smes
 	category = list ("Engineering Machinery")
 
+/datum/design/announcement_system
+	name = "Machine Design (Automated Announcement System Board)"
+	desc = "The circuit board for an automated announcement system."
+	id = "automated_announcement"
+	req_tech = list("programming" = 3, "bluespace" = 2)
+	build_type = IMPRINTER
+	materials = list(MAT_GLASS = 1000, "sacid" = 20)
+	build_path = /obj/item/weapon/circuitboard/announcement_system
+	category = list("Subspace Telecomms")
+
 /datum/design/turbine_computer
 	name = "Computer Design (Power Turbine Console Board)"
 	desc = "The circuit board for a power turbine console."
@@ -20,6 +30,16 @@
 	build_type = IMPRINTER
 	materials = list(MAT_GLASS = 1000, "sacid" = 20)
 	build_path = /obj/item/weapon/circuitboard/turbine_computer
+	category = list ("Engineering Machinery")
+
+/datum/design/emitter
+	name = "Machine Design (Emitter Board)"
+	desc = "The circuit board for an emitter."
+	id = "emitter"
+	req_tech = list("programming" = 4, "powerstorage" = 5, "engineering" = 5)
+	build_type = IMPRINTER
+	materials = list(MAT_GLASS = 1000, "sacid" = 20)
+	build_path = /obj/item/weapon/circuitboard/emitter
 	category = list ("Engineering Machinery")
 
 /datum/design/power_compressor
@@ -82,6 +102,26 @@
 	build_path = /obj/item/weapon/circuitboard/telesci_pad
 	category = list ("Teleportation Machinery")
 
+/datum/design/teleconsole
+	name = "Computer Design (Teleporter Console)"
+	desc = "Allows for the construction of circuit boards used to build a teleporter control console."
+	id = "teleconsole"
+	req_tech = list("programming" = 3, "bluespace" = 2)
+	build_type = IMPRINTER
+	materials = list(MAT_GLASS = 1000, "sacid" = 20)
+	build_path = /obj/item/weapon/circuitboard/teleporter
+	category = list("Teleportation Machinery")
+
+/datum/design/telesci_console
+	name = "Computer Design (Telepad Control Console Board)"
+	desc = "Allows for the construction of circuit boards used to build a telescience console."
+	id = "telesci_console"
+	req_tech = list("programming" = 3, "bluespace" = 2)
+	build_type = IMPRINTER
+	materials = list(MAT_GLASS = 1000, "sacid" = 20)
+	build_path = /obj/item/weapon/circuitboard/telesci_console
+	category = list("Teleportation Machinery")
+
 /datum/design/sleeper
 	name = "Machine Design (Sleeper Board)"
 	desc = "The circuit board for a sleeper."
@@ -131,6 +171,36 @@
 	materials = list(MAT_GLASS = 1000, "sacid" = 20)
 	build_path = /obj/item/weapon/circuitboard/chem_heater
 	category = list ("Medical Machinery")
+
+/datum/design/clonecontrol
+	name = "Computer Design (Cloning Machine Console)"
+	desc = "Allows for the construction of circuit boards used to build a new Cloning Machine console."
+	id = "clonecontrol"
+	req_tech = list("programming" = 3, "biotech" = 3)
+	build_type = IMPRINTER
+	materials = list(MAT_GLASS = 1000, "sacid" = 20)
+	build_path = /obj/item/weapon/circuitboard/cloning
+	category = list("Medical Machinery")
+
+/datum/design/clonepod
+	name = "Machine Design (Clone Pod)"
+	desc = "Allows for the construction of circuit boards used to build a Cloning Pod."
+	id = "clonepod"
+	req_tech = list("programming" = 3, "biotech" = 3)
+	build_type = IMPRINTER
+	materials = list(MAT_GLASS = 1000, "sacid" = 20)
+	build_path = /obj/item/weapon/circuitboard/clonepod
+	category = list("Medical Machinery")
+
+/datum/design/clonescanner
+	name = "Machine Design (Cloning Scanner)"
+	desc = "Allows for the construction of circuit boards used to build a Cloning Scanner."
+	id = "clonescanner"
+	req_tech = list("programming" = 3, "biotech" = 3)
+	build_type = IMPRINTER
+	materials = list(MAT_GLASS = 1000, "sacid" = 20)
+	build_path = /obj/item/weapon/circuitboard/clonescanner
+	category = list("Medical Machinery")
 
 /datum/design/biogenerator
 	name = "Machine Design (Biogenerator Board)"
